@@ -1,4 +1,5 @@
 from player import Player
+import colorama
 
 
 def GameManager():
@@ -11,7 +12,14 @@ def GameManager():
             "purple": [5, 3, 2, 2],
         }
         self.dice = ["red", "green", "blue", "yellow", "purple"]
-        pass
+        self.current_player = Player1
+        self.board = [[] * 16]
 
     def play_game(self):
+        pass
+
+    def display_game(self):
+        pass
+
+    def display_stats(self):
         pass
