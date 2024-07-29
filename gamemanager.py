@@ -18,9 +18,9 @@ class GameManager:
         self.winning_camel = ""
         self.second_camel = ""
         self.players = [Player1, Player2]
-        self.player2 = Player2
 
-    def play_game(self):
+    def move_camels(self):
+
         pass
 
     def display_game(self):
