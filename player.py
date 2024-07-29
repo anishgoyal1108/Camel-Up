@@ -1,4 +1,3 @@
-from gamemanager import GameManager
 import random
 
 
@@ -7,10 +6,9 @@ class Player:
         self.coins = 3
         self.cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
 
-    def roll(self, gm: GameManager) -> tuple:
-        pick = random.choice(gm.dice)
-        gm.dice.remove(pick)
-        return (pick, random.choice([1, 2, 3])) if bool(self.dice) else ()
+    def roll(self, dice: list) -> tuple:
+        pick = random.choice(dice)
+        return (pick, random.choice([1, 2, 3])) if bool(dice) else ()
 
-    def take_bet(self, gm: GameManager):
+    def take_bet(self):
         pass
