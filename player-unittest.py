@@ -25,3 +25,6 @@ class TestPlayerRoll(unittest.TestCase):
         ''' Roll is a number from 1 to 3 (inclusive) '''
         actual = self.player.roll()
         self.assertTrue(1 <= actual[1] <= 3)
+        
+if __name__ == "__main__":
+    unittest.main()
