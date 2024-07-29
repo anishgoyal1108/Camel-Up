@@ -1,6 +1,7 @@
 from player import Player
 
-def GameManager():
+
+class GameManager:
     def __init__(self, Player1=Player(), Player2=Player()):
         self.cards = {
             "red": [5, 3, 2, 2],
@@ -12,7 +13,7 @@ def GameManager():
         self.dice = ["red", "green", "blue", "yellow", "purple"]
         self.current_player = Player1
         self.board = [[] * 16]
-        
+
         self.player_scores = [0, 0]
         self.winning_camel = ""
         self.second_camel = ""
