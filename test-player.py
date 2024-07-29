@@ -1,5 +1,5 @@
 import unittest
-from ../player import Player
+from player import Player
 
 
 class TestPlayerRoll(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestPlayerRoll(unittest.TestCase):
 
     def test_0(self):
         """Test return datatype"""
-        actual = self.player.roll()
+        actual = self.player.roll(self.dice)
         self.assertIsInstance(actual, tuple)
 
     def test_1(self):
@@ -26,3 +26,7 @@ class TestPlayerRoll(unittest.TestCase):
         """Roll is a number from 1 to 3 (inclusive)"""
         actual = self.player.roll(self.dice)
         self.assertTrue(1 <= actual[1] <= 3)
+
+
+if __name__ == "__main__":
+    unittest.main()
