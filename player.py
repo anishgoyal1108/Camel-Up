@@ -10,5 +10,8 @@ class Player:
         pick = random.choice(dice)
         return (pick, random.choice([1, 2, 3])) if bool(dice) else ()
 
-    def take_bet(self):
-        pass
+    def take_bet(self, color: str, cards: dict) -> dict:
+        cards_copy = cards
+        self.cards[color].append(cards[color][0])
+        cards_copy[color].pop(0)
+        return cards_copy
