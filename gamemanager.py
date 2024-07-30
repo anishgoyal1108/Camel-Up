@@ -29,8 +29,9 @@ class GameManager:
             self.board[position].append(pick)
 
     def move_camels(self, camel: str, roll: int) -> None:
-        camel_position = 0
         moving_camels = []
+        camel_long = ["RED", "GREEN", "BLUE", "YELLOW", "PURPLE"]
+        camel_short = ["R", "G", "B", "Y", "P"]
         for i in range(16):
             if camel in self.board[i]:
                 camel_position = i
@@ -38,13 +39,13 @@ class GameManager:
                 moving_camels = self.board[i][camel_index::]
                 self.board[i] = [x for x in self.board[i] if not x in moving_camels]
                 if i+roll > 16:
-                    self.winning_camel = moving_camels[-1]
+                    self.winning_camel = camel_long[camel_short.index(moving_camels[-1])]
                     if len(moving_camels) > 1:
-                        self.second_camel = moving_camels[-2]
+                        self.second_camel = camel_long[camel_short.index(moving_camels[-2])]
                     else:
                         for i in range(15, 0, -1):
                             if len(self.board[i]) > 0:
-                                self.second_camel = self.board[i][-1]
+                                self.second_camel = camel_long[camel_short.index(self.board[i][-1])]
                                 break
                 else:
                     self.board[i+roll].extend(moving_camels)
@@ -67,3 +68,22 @@ class GameManager:
                     for card in self.players[p].cards[camel]:
                         self.player_scores[p] -= 1
         pass
+
+    def leg_reset(self):
+        self.cards = {
+            "red": [5, 3, 2, 2],
+            "green": [5, 3, 2, 2],
+            "blue": [5, 3, 2, 2],
+            "yellow": [5, 3, 2, 2],
+            "purple": [5, 3, 2, 2],
+        }
+        self.dice = {"red": 0, "green": 0, "blue": 0, "yellow": 0, "purple": 0}
+        if self.current_player == self.players[0]:
+            self.current_name = self.player_names[1]
+            self.current_player = self.players[1]
+        else:
+            self.current_name = self.player_names[0]
+            self.current_player = self.players[0]
+        
+        self.players[0].cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
+        self.players[1].cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}

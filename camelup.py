@@ -23,16 +23,27 @@ class PlayGame:
     def take_turn(self) -> None:
         while True:
             action = input(f"\n{self.current_name}'s turn!\n(B)et or (R)oll? ").upper()
-            if action != "B" and action != "R":
+            if action == "BET":
+                action = "B"
+                break
+            elif action == "ROLL":
+                action = "R"
+                break
+            elif action != "B" and action != "R":
                 print("Sorry, that's not a valid move.")
                 continue
             else:
                 break
         
         if action == "B":
+            camel = ["red", "green", "blue", "yellow", "purple"]
+            camel_short = ["r", "g", "b", "y", "p"]
             while True:
-                color = input("Which bet would you like to place? (red, green, blue, yellow, purple) ").lower()
-                if color != "red" and color != "green" and color != "blue" and color != "yellow" and color != "purple":
+                color = input("Which bet would you like to place? (red, green, blue, yellow, purple) ").lower() 
+                if color in camel_short:
+                    color = camel[camel_short.index(color)]
+                    break
+                elif color not in camel:
                     print("Sorry, that's not a valid card.")
                     continue
                 elif len(self.game.cards[color]) == 0:
@@ -56,62 +67,75 @@ class PlayGame:
             self.current_player = self.game.players[0]
 
     def display_game(self) -> None:
-        clear()
         colorama.init(autoreset=True)
-        print("   Ticket Tents: ", end="")
+        game_state = []
+
+        # Print Ticket Tents
+        game_state.append("   Ticket Tents: ")
         for key in ["red", "green", "blue", "yellow", "purple"]:
             if len(self.game.cards[key]) != 0:
-                print(self.color_dict[key.upper()] + str(max(self.game.cards[key])), end=" ")
+                game_state.append(self.color_dict[key.upper()] + str(max(self.game.cards[key])) + " ")
             else:
-                print(self.color_dict[key.upper()] + "X", end=" ")
-        print(" " * 10, end=" ")
-        print("Dice Tents: ", end="")
+                game_state.append(self.color_dict[key.upper()] + "X ")
+        game_state.append(" " * 10)
+        
+        # Print Dice Tents
+        game_state.append(colorama.Fore.WHITE + "Dice Tents: ")
         for die in ["red", "green", "blue", "yellow", "purple"]:
             if self.game.dice[die] != 0:
-                print(self.color_dict[die.upper()] + str(self.game.dice[die]), end=" ")
+                game_state.append(self.color_dict[die.upper()] + str(self.game.dice[die]) + " ")
             else:
-                print(self.color_dict[die.upper()] + "_", end=" ")
-        print()
-        print() 
+                game_state.append(self.color_dict[die.upper()] + "_ ")
+        game_state.append("\n\n")
+        
+        # Print the game board
         for row in range(4, -1, -1):
-            print("🌴  ", end="")
+            game_state.append("🌴  ")
             for pos in range(16):
                 if len(self.game.board[pos]) > row:
                     camel = self.game.board[pos][row]
                     if len(camel) != 0:
                         if pos <= 8:
-                            print(self.color_dict[camel.upper()] + camel[0][0].upper(), end="  ")
+                            game_state.append(self.color_dict[camel.upper()] + camel[0][0].upper() + "  ")
                         else:
-                            print(self.color_dict[camel.upper()] + camel[0][0].upper(), end="   ")
+                            game_state.append(self.color_dict[camel.upper()] + camel[0][0].upper() + "   ")
                 elif pos <= 8:
-                    print("   ", end="")
+                    game_state.append("   ")
                 else:
-                    print("    ", end="")
-            print("🏁")
-        print("    ", end="")
+                    game_state.append("    ")
+            game_state.append("🏁\n")
+        
+        # Print board positions
+        game_state.append("    " + colorama.Fore.WHITE)
         for i in range(1, 17):
-            print(str(i) + " ", end=" ")
-        print()
-        print()
-        print("   ", end="") 
+            game_state.append(str(i) + "  ")
+        game_state.append("\n\n")
+        
+        # Print player info
+        game_state.append("   ")
         spacer = 0
         if self.game.players[0].coins > 9:
             spacer = 1
-        print(f"{self.game.player_names[0]} has {self.game.players[0].coins} coins." + " " * (22 - spacer), end="")
-        print(f"{self.game.player_names[1]} has {self.game.players[0].coins} coins.")
-        print("   ", end="")
-        print("Bets: ", end="")
+        game_state.append(f"{self.game.player_names[0]} has {self.game.players[0].coins} coins." + " " * (22 - spacer))
+        game_state.append(f"{self.game.player_names[1]} has {self.game.players[1].coins} coins.\n")
+        
+        # p1 bets
+        game_state.append(colorama.Fore.WHITE + "   Bets: ")
         count = 0
         for key in self.game.players[0].cards:
             for i in self.game.players[0].cards[key]:
-                print(self.color_dict[key.upper()] + str(i), end=" ")
+                game_state.append(self.color_dict[key.upper()] + str(i) + " ")
                 count += 1
-        print(" " * (34 - 2 * count), end="")
-        print("Bets: ", end="")
+        game_state.append(" " * (34 - 2 * count))
+        
+        # p2 bets
+        game_state.append(colorama.Fore.WHITE + "Bets: ")
         for key in self.game.players[1].cards:
             for i in self.game.players[1].cards[key]:
-                print(self.color_dict[key.upper()] + str(i), end=" ")
-        print()
+                game_state.append(self.color_dict[key.upper()] + str(i) + " ")
+    
+        # final print statement 
+        print("".join(game_state)) 
     
     def display_final(self) -> None:
         winning_player = None
@@ -135,10 +159,35 @@ if __name__ == "__main__":
     game = GameManager()
     play_game = PlayGame(game)
     game.init_camels()
-    while play_game.num_dice_rolled < 5:
+    while game.winning_camel == "":
+        clear()
         play_game.display_game()
         play_game.take_turn()
-    winning_camel_found = False
+        if play_game.num_dice_rolled == 5:
+            leg_ended = []
+            leg_ended.append(" " * 34 + "LEG ENDED!\nLeg Results:\n")
+            init_player1_coins = game.players[0].coins
+            init_player2_coins = game.players[1].coins
+            game.update_score()
+            game.players[0].coins = game.player_scores[0]
+            game.players[1].coins = game.player_scores[1]
+            spacer = 0
+            if game.player_scores[0] > 9:
+                spacer += 1
+            if abs(game.player_scores[0]-init_player1_coins) > 9:
+                spacer += 1
+            if game.player_scores[0]-init_player1_coins < 0:
+                spacer += 1
+            leg_ended.append("🥇 FIRST PLACE 🥇: " + play_game.color_dict[game.winning_camel.upper()] + game.winning_camel.upper() + "\n")
+            leg_ended.append("🥈 SECOND PLACE 🥈: " + play_game.color_dict[game.second_camel.upper()] + game.second_camel.upper() + "\n")
+            leg_ended.append(f"{game.player_names[0]} has {game.player_scores[0]} coins ({game.player_scores[0]-init_player1_coins} coins)." + " " * (13 - spacer) + "\n")
+            leg_ended.append(f"{game.player_names[1]} has {game.player_scores[1]} coins ({game.player_scores[1]-init_player2_coins} coins).\n")
+            print(''.join(leg_ended))
+            input("Press any key to continue... ")
+            play_game.num_dice_rolled = 0
+            game.leg_reset()
+    
+    '''winning_camel_found = False
     for i in range(15, 0, -1):
         if len(game.board[i]) > 0:
             if not winning_camel_found:
@@ -146,6 +195,6 @@ if __name__ == "__main__":
                 winning_camel_found = True
             else:
                 game.second_camel = game.board[i][-1]
-                break
+                break'''
     play_game.display_final()
     print("End Game")
