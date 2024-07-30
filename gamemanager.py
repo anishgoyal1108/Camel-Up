@@ -1,4 +1,5 @@
 from player import Player
+import random
 
 
 class GameManager:
@@ -12,15 +13,32 @@ class GameManager:
         }
         self.dice = ["red", "green", "blue", "yellow", "purple"]
         self.current_player = Player1
-        self.board = [[] * 16]
+        self.board = [[] for _ in range(16)]
 
         self.player_scores = [0, 0]
         self.winning_camel = ""
         self.second_camel = ""
         self.players = [Player1, Player2]
 
-    def move_camels(self):
+    def init_camels(self) -> None:
+        dice = ["red", "green", "blue", "yellow", "purple"]
+        for _ in range(5):
+            pick = random.choice(dice)
+            dice.remove(pick)
+            position = random.choice([0, 1, 2])
+            self.board[position].append(pick)
 
+    def move_camels(self, camel: str, roll: int) -> None:
+        camel_position = 0
+        moving_camels = []
+        for i in range(16):
+            if camel in self.board[i]:
+                camel_position = i
+                camel_index = self.board[i].index(camel)
+                moving_camels = self.board[i][:camel_index:]
+                
+                break
+        print(self.board.index(camel))
         pass
 
     def display_game(self):
