@@ -2,11 +2,13 @@ import random
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, name: str):
         self.coins = 3
         self.cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
+        self.name = name
 
     def roll(self, dice: list) -> tuple:
+        self.coins += 1
         pick = random.choice(dice)
         return (pick, random.choice([1, 2, 3])) if bool(dice) else ()
 
