@@ -52,6 +52,9 @@ class GameManager:
         pass
 
     def update_score(self) -> None:
+        self.player_scores[0] = self.players[0].coins
+        self.player_scores[1] = self.players[1].coins
+
         for p in range(2):
             for camel in self.players[p].cards:
                 if camel == self.winning_camel:

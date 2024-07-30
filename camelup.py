@@ -18,7 +18,7 @@ class PlayGame:
             "YELLOW": colorama.Fore.YELLOW,
             "PURPLE": colorama.Fore.MAGENTA
         }
-
+        self.num_dice_rolled = 0
     
     def take_turn(self) -> None:
         while True:
@@ -45,6 +45,8 @@ class PlayGame:
             available_dice = [key for key in self.game.dice if self.game.dice[key] == 0]
             color, number = self.current_player.roll(available_dice)
             self.game.dice[color] = number
+            self.num_dice_rolled += 1
+            self.game.move_camels(color, number)
         
         if self.current_player == self.game.players[0]:
             self.current_name = self.game.player_names[1]
@@ -70,9 +72,22 @@ class PlayGame:
             else:
                 print(self.color_dict[die.upper()] + "_", end=" ")
         print()
-        print
-        for _ in range(5):
-            print("🌴" + " " * 58 + "🏁")
+        print() 
+        for row in range(4, -1, -1):
+            print("🌴  ", end="")
+            for pos in range(16):
+                if len(self.game.board[pos]) > row:
+                    camel = self.game.board[pos][row]
+                    if len(camel) != 0:
+                        if pos <= 8:
+                            print(self.color_dict[camel.upper()] + camel[0][0].upper(), end="  ")
+                        else:
+                            print(self.color_dict[camel.upper()] + camel[0][0].upper(), end="   ")
+                elif pos <= 8:
+                    print("   ", end="")
+                else:
+                    print("    ", end="")
+            print("🏁")
         print("    ", end="")
         for i in range(1, 17):
             print(str(i) + " ", end=" ")
@@ -80,10 +95,10 @@ class PlayGame:
         print()
         print("   ", end="") 
         spacer = 0
-        if self.game.player_scores[0] > 9:
+        if self.game.players[0].coins > 9:
             spacer = 1
-        print(f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins." + " " * (22 - spacer), end="")
-        print(f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins.")
+        print(f"{self.game.player_names[0]} has {self.game.players[0].coins} coins." + " " * (22 - spacer), end="")
+        print(f"{self.game.player_names[1]} has {self.game.players[0].coins} coins.")
         print("   ", end="")
         print("Bets: ", end="")
         count = 0
@@ -97,13 +112,40 @@ class PlayGame:
             for i in self.game.players[1].cards[key]:
                 print(self.color_dict[key.upper()] + str(i), end=" ")
         print()
+    
+    def display_final(self) -> None:
+        winning_player = None
+
+        self.game.update_score()
+
+        spacer = 0
+        if self.game.player_scores[0] > 9:
+            spacer = 1
+        print(f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins." + " " * (22 - spacer), end="")
+        print(f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins.")
+        if (self.game.player_scores[0] > self.game.player_scores[1]):
+            print(f"{self.game.player_names[0]} has won!")
+        elif (self.game.player_scores[1] > self.game.player_scores[0]):
+            print(f"{self.game.player_names[1]} has won!")
+        else:
+            print(f"{self.game.player_names[0]} and {self.game.player_names[1]} have tied!")
         
 
 if __name__ == "__main__":
     game = GameManager()
     play_game = PlayGame(game)
-    num_dice_rolled = 0
-    while num_dice_rolled > 0:
+    game.init_camels()
+    while play_game.num_dice_rolled < 5:
         play_game.display_game()
         play_game.take_turn()
+    winning_camel_found = False
+    for i in range(15, 0, -1):
+        if len(game.board[i]) > 0:
+            if not winning_camel_found:
+                game.winning_camel = game.board[i][-1]
+                winning_camel_found = True
+            else:
+                game.second_camel = game.board[i][-1]
+                break
+    play_game.display_final()
     print("End Game")
