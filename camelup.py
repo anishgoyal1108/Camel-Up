@@ -63,7 +63,7 @@ class PlayGame:
             if len(self.game.cards[key]) != 0:
                 print(self.color_dict[key.upper()] + str(max(self.game.cards[key])), end=" ")
             else:
-                print(self.color_dict[key] + "X", end=" ")
+                print(self.color_dict[key.upper()] + "X", end=" ")
         print(" " * 10, end=" ")
         print("Dice Tents: ", end="")
         for die in ["red", "green", "blue", "yellow", "purple"]:
