@@ -352,25 +352,3 @@ class PlayGame:
                 else:
                     self.game.second_camel = self.game.board[i][-1]
                     break
-
-
-def main() -> None:
-    """
-    Main function to initialize and run the game loop.
-    """
-    game = GameManager()
-    play_game = PlayGame(game)
-    game.init_camels()
-    while game.winning_camel == "":
-        play_game.display_game()
-        play_game.take_turn()
-        if play_game.num_dice_rolled == 5:
-            play_game.num_dice_rolled = 0
-            play_game.calculate_leg_winners()
-            play_game.display_leg_results()
-            game.leg_reset()
-    print("End Game")
-
-
-if __name__ == "__main__":
-    main()
