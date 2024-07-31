@@ -278,7 +278,7 @@ def main() -> None:
         play_game.display_game()
         play_game.take_turn()
         if play_game.num_dice_rolled == 5:
-            play_game.display_leg_end()
+            play_game.display_final()
             play_game.num_dice_rolled = 0
             game.leg_reset()
     play_game.display_final()
