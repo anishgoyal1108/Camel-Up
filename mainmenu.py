@@ -24,6 +24,8 @@ class MainMenu:
             "WHITE": colorama.Fore.WHITE,
         }
         self.logo = """
+                                                             MMM       MM
+                                                             MMMM    MMMM
                                 MMMMMMM                     MMMMMMMMMMMMMM
                               MMMMMMMMMMMM                MMMMMMMMMMMMMMMMMMM
                             MMMMMMMMMMMMMMMM                MMMMMMMMMMMMMMMMM
