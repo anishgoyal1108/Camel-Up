@@ -41,10 +41,6 @@ class PlayGame:
         else:
             self.handle_roll()
         self.switch_turn()
-        if self.num_dice_rolled == 5:
-            self.display_leg_results()
-            self.num_dice_rolled = 0
-            self.game.leg_reset()
 
     def get_player_action(self) -> str:
         """
@@ -243,8 +239,9 @@ class PlayGame:
         """
         Display the results of the leg when all dice have been rolled.
         """
-        leg_ended = []
-        leg_ended.append(" " * 34 + "LEG ENDED!\nLeg Results:\n")
+        self.clear()
+        leg_ended = ["\n\n", self.get_board_state(), self.get_board_positions()]
+        leg_ended.append(" " * 25 + "LEG ENDED!\nLeg Results:\n")
         leg_ended.append(self.get_leg_places())
         leg_ended.append(self.get_player_scores_update())
         print("".join(leg_ended))
@@ -256,13 +253,16 @@ class PlayGame:
         """
         leg_places = []
         leg_places.append(
-            "🥇 FIRST PLACE 🥇: "
+            colorama.Fore.WHITE
+            + "🥇 FIRST PLACE 🥇: "
             + self.color_dict[self.game.winning_camel.upper()]
             + self.game.winning_camel.upper()
+            + colorama.Fore.WHITE
             + "\n"
         )
         leg_places.append(
-            "🥈 SECOND PLACE 🥈: "
+            colorama.Fore.WHITE
+            + "🥈 SECOND PLACE 🥈: "
             + self.color_dict[self.game.second_camel.upper()]
             + self.game.second_camel.upper()
             + "\n"
@@ -287,7 +287,7 @@ class PlayGame:
         if self.game.player_scores[0] - init_player1_coins < 0:
             spacer += 1
 
-        player_scores = []
+        player_scores = [colorama.Fore.WHITE]
         player_scores.append(
             f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins ({self.game.player_scores[0] - init_player1_coins} coins)."
             + " " * (13 - spacer)
@@ -310,7 +310,19 @@ def main() -> None:
     while game.winning_camel == "":
         play_game.display_game()
         play_game.take_turn()
-    play_game.display_final()
+        if play_game.num_dice_rolled == 5:
+            winning_camel_found = False
+            for i in range(15, 0, -1):
+                if len(game.board[i]) > 0:
+                    if not winning_camel_found:
+                        game.winning_camel = game.board[i][-1]
+                        winning_camel_found = True
+                    else:
+                        game.second_camel = game.board[i][-1]
+                        break
+            play_game.display_leg_results()
+            play_game.num_dice_rolled = 0
+            game.leg_reset()
     print("End Game")
 
 
