@@ -11,6 +11,9 @@ class PlayGame:
     def __init__(self, game_manager: GameManager):
         """
         Initialize the PlayGame class.
+
+        Args:
+            game_manager (GameManager): The game manager for the game.
         """
         self.game = game_manager
         self.current_player = game_manager.current_player
@@ -45,6 +48,9 @@ class PlayGame:
     def get_player_action(self) -> str:
         """
         Prompt the player to choose an action (Bet or Roll).
+
+        Returns:
+            str: The action
         """
         while True:
             action = input(f"\n{self.current_name}'s turn!\n(B)et or (R)oll? ").upper()
@@ -65,6 +71,9 @@ class PlayGame:
     def get_bet_color(self) -> str:
         """
         Prompt the player to choose a bet color.
+
+        Returns:
+            str: The bet color
         """
         camel_colors = ["red", "green", "blue", "yellow", "purple"]
         camel_short = ["r", "g", "b", "y", "p"]
@@ -120,7 +129,10 @@ class PlayGame:
 
     def get_game_state(self) -> str:
         """
-        Get the current game state as a formatted string.
+        Get the current game state.
+
+        Returns:
+            str: The current game state as a formatted string.
         """
         game_state = []
         game_state.append(self.get_ticket_tents_state())
@@ -132,7 +144,10 @@ class PlayGame:
 
     def get_ticket_tents_state(self) -> str:
         """
-        Get the ticket tents state as a formatted string.
+        Get the current ticket tents state.
+
+        Returns:
+            str: The current ticket tents state as a formatted string.
         """
         state = ["   Ticket Tents: "]
         for key in ["red", "green", "blue", "yellow", "purple"]:
@@ -147,7 +162,10 @@ class PlayGame:
 
     def get_dice_tents_state(self) -> str:
         """
-        Get the dice tents state as a formatted string.
+        Get the current dice tents state.
+
+        Returns:
+            str: The dice tents state as a formatted string.
         """
         state = [colorama.Fore.WHITE + "Dice Tents: "]
         for die in ["red", "green", "blue", "yellow", "purple"]:
@@ -162,7 +180,10 @@ class PlayGame:
 
     def get_board_state(self) -> str:
         """
-        Get the board state as a formatted string.
+        Get the current board state.
+
+        Returns:
+            str: The current board state as a formatted string.
         """
         state = []
         for row in range(4, -1, -1):
@@ -192,7 +213,10 @@ class PlayGame:
 
     def get_board_positions(self) -> str:
         """
-        Get the board positions as a formatted string.
+        Get the current board positions.
+
+        Returns:
+            str: The current board positions as a formatted string.
         """
         state = ["    " + colorama.Fore.WHITE]
         for i in range(1, 17):
@@ -202,7 +226,10 @@ class PlayGame:
 
     def get_player_info(self) -> str:
         """
-        Get the players' information as a formatted string.
+        Get the players' current information.
+
+        Returns:
+            str: The players' current information as a formatted string.
         """
         state = ["   "]
         spacer = 0
@@ -223,7 +250,14 @@ class PlayGame:
 
     def get_player_bets(self, player_index: int, padding: str) -> str:
         """
-        Get the bets of a player as a formatted string.
+        Get the bets of a player for the current leg.
+
+        Args:
+            player_index (int): The index of the player
+            padding (str): The padding for the bets display
+
+        Returns:
+            str: The bets of a player for the current leg as a formatted string.
         """
         state = [colorama.Fore.WHITE + padding + "Bets: "]
         count = 0
@@ -249,7 +283,10 @@ class PlayGame:
 
     def get_leg_places(self) -> str:
         """
-        Get the formatted string of the camel positions for the leg.
+        Get the camel positions for the leg.
+
+        Returns:
+            str: The camel positions for the leg as a formatted string.
         """
         leg_places = []
         leg_places.append(
@@ -271,7 +308,10 @@ class PlayGame:
 
     def get_player_scores_update(self) -> str:
         """
-        Get the formatted string of the player scores update for the leg.
+        Update and get the players' scores for the leg.
+
+        Returns:
+            str: The formatted string of the players' updated scores for the leg.
         """
         init_player1_coins = self.game.players[0].coins
         init_player2_coins = self.game.players[1].coins
@@ -299,6 +339,20 @@ class PlayGame:
 
         return "".join(player_scores)
 
+    def calculate_leg_winners(self) -> None:
+        """
+        Calculate the winners based on the camel positions on the board.
+        """
+        winning_camel_found = False
+        for i in range(15, 0, -1):
+            if len(self.game.board[i]) > 0:
+                if not winning_camel_found:
+                    self.game.winning_camel = self.game.board[i][-1]
+                    winning_camel_found = True
+                else:
+                    self.game.second_camel = self.game.board[i][-1]
+                    break
+
 
 def main() -> None:
     """
@@ -311,17 +365,9 @@ def main() -> None:
         play_game.display_game()
         play_game.take_turn()
         if play_game.num_dice_rolled == 5:
-            winning_camel_found = False
-            for i in range(15, 0, -1):
-                if len(game.board[i]) > 0:
-                    if not winning_camel_found:
-                        game.winning_camel = game.board[i][-1]
-                        winning_camel_found = True
-                    else:
-                        game.second_camel = game.board[i][-1]
-                        break
-            play_game.display_leg_results()
             play_game.num_dice_rolled = 0
+            play_game.calculate_leg_winners()
+            play_game.display_leg_results()
             game.leg_reset()
     print("End Game")
 
