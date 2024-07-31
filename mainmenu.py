@@ -130,7 +130,7 @@ def main() -> None:
                     play_game.display_leg_results(og_coins)
                     og_coins = [game.players[0].coins, game.players[1].coins]
                     game.leg_reset()
-            print("End Game")
+            play_game.game_over()
             break
 
         elif choice == 2:
