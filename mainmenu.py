@@ -23,36 +23,36 @@ class MainMenu:
             "WHITE": colorama.Fore.WHITE,
         }
         self.logo = """
-                         MMMMMMM                     MMMMMMMMMMMMMM
-                      MMMMMMMMMMMM                MMMMMMMMMMMMMMMMMMM
-                    MMMMMMMMMMMMMMMM                MMMMMMMMMMMMMMMMM
-               MMMMMMMMMMMMMMMMMMMMMM              MMMMMMMMMMMMM   MM
-            MMMMMMMMMMMMMMMMMMMMMMMMMMM            MMMMMMMMMMM
-          MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM        MMMMMMMMMMMM
-        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM    MMMMMMMMMMMMM
-        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-      MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-    MMMMMMMM  MMMMMMMM  MMMMMMMMMMMMMMMMMMMM
-   MMMMM  M   MMMMMMM       MNMMMMMMMMMMMMMM
- MMMMM  MMMM  MMMMMM          MMMMM  MMMMMM
-MMMMMM  MMM  MMMMMM           MMMMM   MMMMM
-MMMMM     M  MMMMM            MMMM     MMMM
-MMMM        MMMMM           MMMMMM      MMMMM
- MMM       MMMMMMM          NMMMMM      MMMMM
- MM         MMMM             MMMM         MMM
-MMMM         MMMM           MMMM           MM
- MMM          MMM           MMM            MMM
- MMMM         MMMM         MMM              MMM
- MMMMM         MMM        MMMM               MMM
-   MMMMMM      MMMM        MMMM              MMMMMM
-      MMM       MMMMM       MMMM              MMMMMM
-                  MMMMM                        MMMMM
-                    MMMMM
-"""
+                                MMMMMMM                     MMMMMMMMMMMMMM
+                              MMMMMMMMMMMM                MMMMMMMMMMMMMMMMMMM
+                            MMMMMMMMMMMMMMMM                MMMMMMMMMMMMMMMMM
+                      MMMMMMMMMMMMMMMMMMMMMM              MMMMMMMMMMMMM   MM
+                    MMMMMMMMMMMMMMMMMMMMMMMMMMM            MMMMMMMMMMM
+                  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM        MMMMMMMMMMMM
+                MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM    MMMMMMMMMMMMM
+                MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+              MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+              MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+              MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+              MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+            MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+            MMMMMMMM  MMMMMMMM  MMMMMMMMMMMMMMMMMMMM
+          MMMMM  M   MMMMMMM       MNMMMMMMMMMMMMMM
+        MMMMM  MMMM  MMMMMM          MMMMM  MMMMMM
+        MMMMMM  MMM  MMMMMM           MMMMM   MMMMM
+        MMMMM     M  MMMMM            MMMM     MMMM
+        MMMM        MMMMM           MMMMMM      MMMMM
+        MMM       MMMMMMM          NMMMMM      MMMMM
+        MM         MMMM             MMMM         MMM
+        MMMM         MMMM           MMMM           MM
+        MMM          MMM           MMM            MMM
+        MMMM         MMMM         MMM              MMM
+        MMMMM         MMM        MMMM               MMM
+          MMMMMM      MMMM        MMMM              MMMMMM
+              MMM       MMMMM       MMMM              MMMMMM
+                          MMMMM                        MMMMM
+                            MMMMM
+        """
 
     def display_menu(self) -> None:
         """
