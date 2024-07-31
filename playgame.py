@@ -281,7 +281,7 @@ class PlayGame:
         leg_ended.append(self.get_leg_places())
         leg_ended.append(self.get_player_scores_update(og_coins))
         print("".join(leg_ended))
-        input("Press any key to continue... ")
+        input("Press ENTER to continue... ")
 
     def get_leg_places(self) -> str:
         """
@@ -352,3 +352,31 @@ class PlayGame:
                 else:
                     self.leg_second = self.game.board[i][-1]
                     break
+
+    def game_over(self) -> None:
+        """
+        Display the winner of the game.
+        """
+        self.clear()
+        self.game.update_score()
+        player1_score = self.game.player_scores[0]
+        player2_score = self.game.player_scores[1]
+
+        if player1_score > player2_score:
+            winner = self.game.players[0]
+            second = self.game.players[1]
+        else:
+            winner = self.game.players[1]
+            second = self.game.players[0]
+
+        game_over = [
+            "\n\n",
+            self.get_board_state(),
+            self.get_board_positions(),
+            colorama.Fore.WHITE + "GAME OVER!\n",
+            f"The winning camel was {self.color_dict[self.game.winning_camel] + self.game.winning_camel + colorama.Fore.WHITE} and the runner up camel was {self.color_dict[self.game.second_camel] + self.game.second_camel + colorama.Fore.WHITE}!\n",
+            f"{winner.name} WINS with {winner.coins} coins!\n",
+            f"{second.name} came in second with {second.coins} coins.\n",
+        ]
+        print("".join(game_over))
+        print("Thanks for playing Camel Up!")
