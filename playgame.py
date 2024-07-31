@@ -271,7 +271,7 @@ class PlayGame:
             state.append(" " * (33 - 2 * count))
         return "".join(state)
 
-    def display_leg_results(self) -> None:
+    def display_leg_results(self, og_coins: list) -> None:
         """
         Display the results of the leg when all dice have been rolled.
         """
@@ -279,7 +279,7 @@ class PlayGame:
         leg_ended = ["\n\n", self.get_board_state(), self.get_board_positions()]
         leg_ended.append(" " * 25 + "LEG ENDED!\nLeg Results:\n")
         leg_ended.append(self.get_leg_places())
-        leg_ended.append(self.get_player_scores_update())
+        leg_ended.append(self.get_player_scores_update(og_coins))
         print("".join(leg_ended))
         input("Press any key to continue... ")
 
@@ -308,15 +308,13 @@ class PlayGame:
         )
         return "".join(leg_places)
 
-    def get_player_scores_update(self) -> str:
+    def get_player_scores_update(self, og_coins: list) -> str:
         """
         Update and get the players' scores for the leg.
 
         Returns:
             str: The formatted string of the players' updated scores for the leg.
         """
-        init_player1_coins = self.game.players[0].coins
-        init_player2_coins = self.game.players[1].coins
         self.game.update_score()
         self.game.players[0].coins = self.game.player_scores[0]
         self.game.players[1].coins = self.game.player_scores[1]
@@ -324,19 +322,19 @@ class PlayGame:
         spacer = 0
         if self.game.player_scores[0] > 9:
             spacer += 1
-        if abs(self.game.player_scores[0] - init_player1_coins) > 9:
+        if abs(self.game.player_scores[0] - og_coins[0]) > 9:
             spacer += 1
-        if self.game.player_scores[0] - init_player1_coins < 0:
+        if self.game.player_scores[0] - og_coins[0] < 0:
             spacer += 1
 
         player_scores = [colorama.Fore.WHITE]
         player_scores.append(
-            f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins ({self.game.player_scores[0] - init_player1_coins} coins)."
+            f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins ({self.game.player_scores[0] - og_coins[0]} coins)."
             + " " * (13 - spacer)
             + "\n"
         )
         player_scores.append(
-            f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins ({self.game.player_scores[1] - init_player2_coins} coins).\n"
+            f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins ({self.game.player_scores[1] - og_coins[1]} coins).\n"
         )
 
         return "".join(player_scores)
