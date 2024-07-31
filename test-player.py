@@ -4,7 +4,7 @@ from player import Player
 
 class TestPlayerRoll(unittest.TestCase):
     def setUp(self) -> None:
-        self.player = Player()
+        self.player = Player("Alice")
         self.dice = ["red", "green", "blue", "yellow", "purple"]
 
     def test_0(self):
@@ -29,7 +29,7 @@ class TestPlayerRoll(unittest.TestCase):
 
 class TestPlayerBet(unittest.TestCase):
     def setUp(self) -> None:
-        self.player = Player()
+        self.player = Player("Alice")
         self.cards = {
             "red": [5, 3, 2, 2],
             "green": [5, 3, 2, 2],
@@ -60,6 +60,10 @@ class TestPlayerBet(unittest.TestCase):
         actual = newDict[color]
         self.assertListEqual(actual, [2, 2])
 
+class TestPlayerHint(unittest.TestCase):
+    def setUp(self) -> None:
+        self.player = Player("Alice")
+        pass
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 from gamemanager import GameManager
+from evbot import EVBot
 import colorama
 import os
 
@@ -15,7 +16,7 @@ class PlayGame:
         Args:
             game_manager (GameManager): The game manager for the game.
         """
-        self.game = game_manager
+        self.manager = game_manager
         self.current_player = game_manager.current_player
         self.current_name = game_manager.player_names[0]
         self.color_dict = {
@@ -26,9 +27,9 @@ class PlayGame:
             "PURPLE": colorama.Fore.MAGENTA,
         }
         self.num_dice_rolled = 0
-        colorama.init(autoreset=True)
         self.leg_winner = ""
-        self.leg_second = ""
+        self.leg_second = "" 
+        colorama.init(autoreset=True)
 
     def clear(self) -> None:
         """
@@ -36,39 +37,46 @@ class PlayGame:
         """
         os.system("cls" if os.name == "nt" else "clear")
 
-    def take_turn(self) -> None:
+    def take_turn(self, action = None, color = None) -> None:
         """
         Handle the player's turn by getting the player's action and executing it.
         """
-        action = self.get_player_action()
+        if not action:
+            action = self.get_player_action()
         if action == "B":
-            self.handle_bet()
-        else:
+            self.handle_bet(color)
+        elif action == "R":
             self.handle_roll()
+        else:
+            self.handle_hint()
+            self.take_turn()
         self.switch_turn()
 
     def get_player_action(self) -> str:
         """
-        Prompt the player to choose an action (Bet or Roll).
+        Prompt the player to choose an action (Bet, Roll, Hint).
 
         Returns:
             str: The action
         """
         while True:
-            action = input(f"\n{self.current_name}'s turn!\n(B)et or (R)oll? ").upper()
+            action = input(f"\n{self.current_name}'s turn!\n(B)et, (R)oll, or get (H)int? ").upper()
             if action in ["B", "BET"]:
                 return "B"
             elif action in ["R", "ROLL"]:
                 return "R"
+            elif action in ["H", "Hint"]:
+                return "H"
             else:
                 print("Sorry, that's not a valid move.")
 
-    def handle_bet(self) -> None:
+    def handle_bet(self, color = None) -> None:
         """
         Handle the bet action by prompting the player to choose a bet color.
         """
-        color = self.get_bet_color()
-        self.game.cards = self.current_player.take_bet(color, self.game.cards)
+        if not color:
+            color = self.get_bet_color()
+        self.manager.cards = self.current_player.take_bet(color, self.manager.cards)
 
     def get_bet_color(self) -> str:
         """
@@ -85,12 +93,12 @@ class PlayGame:
             ).lower()
             if color in camel_short:
                 color = camel_colors[camel_short.index(color)]
-                if len(self.game.cards[color]) != 0:
+                if len(self.manager.cards[color]) != 0:
                     return color
                 else:
                     print(f"Sorry, all the {color} cards are gone.")
             elif color in camel_colors:
-                if len(self.game.cards[color]) != 0:
+                if len(self.manager.cards[color]) != 0:
                     return color
                 else:
                     print(f"Sorry, all the {color} cards are gone.")
@@ -101,25 +109,29 @@ class PlayGame:
         """
         Handle the roll action by rolling available dice and moving camels accordingly.
         """
-        available_dice = [key for key in self.game.dice if self.game.dice[key] == 0]
+        available_dice = [key for key in self.manager.dice if self.manager.dice[key] == 0]
         color, number = self.current_player.roll(available_dice)
-        self.game.dice[color] = number
+        self.manager.dice[color] = number
         self.num_dice_rolled += 1
-        self.game.move_camels(color, number)
+        self.manager.move_camels(color, number)
+    
+    def handle_hint(self) -> None:
+        self.current_player.coins -= 1
+        print(EVBot(self.manager).calculate_ev())
 
     def switch_turn(self) -> None:
         """
         Switch the turn to the other player.
         """
         self.current_player = (
-            self.game.players[1]
-            if self.current_player == self.game.players[0]
-            else self.game.players[0]
+            self.manager.players[1]
+            if self.current_player == self.manager.players[0]
+            else self.manager.players[0]
         )
         self.current_name = (
-            self.game.player_names[1]
-            if self.current_name == self.game.player_names[0]
-            else self.game.player_names[0]
+            self.manager.player_names[1]
+            if self.current_name == self.manager.player_names[0]
+            else self.manager.player_names[0]
         )
 
     def display_game(self) -> None:
@@ -153,9 +165,9 @@ class PlayGame:
         """
         state = ["   Ticket Tents: "]
         for key in ["red", "green", "blue", "yellow", "purple"]:
-            if len(self.game.cards[key]) != 0:
+            if len(self.manager.cards[key]) != 0:
                 state.append(
-                    self.color_dict[key.upper()] + str(max(self.game.cards[key])) + " "
+                    self.color_dict[key.upper()] + str(max(self.manager.cards[key])) + " "
                 )
             else:
                 state.append(self.color_dict[key.upper()] + "X ")
@@ -171,9 +183,9 @@ class PlayGame:
         """
         state = [colorama.Fore.WHITE + "Dice Tents: "]
         for die in ["red", "green", "blue", "yellow", "purple"]:
-            if self.game.dice[die] != 0:
+            if self.manager.dice[die] != 0:
                 state.append(
-                    self.color_dict[die.upper()] + str(self.game.dice[die]) + " "
+                    self.color_dict[die.upper()] + str(self.manager.dice[die]) + " "
                 )
             else:
                 state.append(self.color_dict[die.upper()] + "_ ")
@@ -191,8 +203,8 @@ class PlayGame:
         for row in range(4, -1, -1):
             state.append("🌴  ")
             for pos in range(16):
-                if len(self.game.board[pos]) > row:
-                    camel = self.game.board[pos][row]
+                if len(self.manager.board[pos]) > row:
+                    camel = self.manager.board[pos][row]
                     if len(camel) != 0:
                         if pos <= 8:
                             state.append(
@@ -235,14 +247,14 @@ class PlayGame:
         """
         state = ["   "]
         spacer = 0
-        if self.game.players[0].coins > 9:
+        if self.manager.players[0].coins > 9:
             spacer = 1
         state.append(
-            f"{self.game.player_names[0]} has {self.game.players[0].coins} coins."
+            f"{self.manager.player_names[0]} has {self.manager.players[0].coins} coins."
             + " " * (22 - spacer)
         )
         state.append(
-            f"{self.game.player_names[1]} has {self.game.players[1].coins} coins.\n"
+            f"{self.manager.player_names[1]} has {self.manager.players[1].coins} coins.\n"
         )
 
         state.append(self.get_player_bets(0, "   "))
@@ -263,8 +275,8 @@ class PlayGame:
         """
         state = [colorama.Fore.WHITE + padding + "Bets: "]
         count = 0
-        for key in self.game.players[player_index].cards:
-            for i in self.game.players[player_index].cards[key]:
+        for key in self.manager.players[player_index].cards:
+            for i in self.manager.players[player_index].cards[key]:
                 state.append(self.color_dict[key.upper()] + str(i) + " ")
                 count += 1
         if player_index == 0:
@@ -315,26 +327,26 @@ class PlayGame:
         Returns:
             str: The formatted string of the players' updated scores for the leg.
         """
-        self.game.update_score()
-        self.game.players[0].coins = self.game.player_scores[0]
-        self.game.players[1].coins = self.game.player_scores[1]
+        self.manager.update_score()
+        self.manager.players[0].coins = self.manager.player_scores[0]
+        self.manager.players[1].coins = self.manager.player_scores[1]
 
         spacer = 0
-        if self.game.player_scores[0] > 9:
+        if self.manager.player_scores[0] > 9:
             spacer += 1
-        if abs(self.game.player_scores[0] - og_coins[0]) > 9:
+        if abs(self.manager.player_scores[0] - og_coins[0]) > 9:
             spacer += 1
-        if self.game.player_scores[0] - og_coins[0] < 0:
+        if self.manager.player_scores[0] - og_coins[0] < 0:
             spacer += 1
 
         player_scores = [colorama.Fore.WHITE]
         player_scores.append(
-            f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins ({self.game.player_scores[0] - og_coins[0]} coins)."
+            f"{self.manager.player_names[0]} has {self.manager.player_scores[0]} coins ({self.manager.player_scores[0] - og_coins[0]} coins)."
             + " " * (13 - spacer)
             + "\n"
         )
         player_scores.append(
-            f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins ({self.game.player_scores[1] - og_coins[1]} coins).\n"
+            f"{self.manager.player_names[1]} has {self.manager.player_scores[1]} coins ({self.manager.player_scores[1] - og_coins[1]} coins).\n"
         )
 
         return "".join(player_scores)
@@ -345,12 +357,12 @@ class PlayGame:
         """
         winning_camel_found = False
         for i in range(15, 0, -1):
-            if len(self.game.board[i]) > 0:
+            if len(self.manager.board[i]) > 0:
                 if not winning_camel_found:
-                    self.leg_winner = self.game.board[i][-1]
+                    self.leg_winner = self.manager.board[i][-1]
                     winning_camel_found = True
                 else:
-                    self.leg_second = self.game.board[i][-1]
+                    self.leg_second = self.manager.board[i][-1]
                     break
 
     def game_over(self) -> None:
@@ -358,23 +370,23 @@ class PlayGame:
         Display the winner of the game.
         """
         self.clear()
-        self.game.update_score()
-        player1_score = self.game.player_scores[0]
-        player2_score = self.game.player_scores[1]
+        self.manager.update_score()
+        player1_score = self.manager.player_scores[0]
+        player2_score = self.manager.player_scores[1]
 
         if player1_score > player2_score:
-            winner = self.game.players[0]
-            second = self.game.players[1]
+            winner = self.manager.players[0]
+            second = self.manager.players[1]
         else:
-            winner = self.game.players[1]
-            second = self.game.players[0]
+            winner = self.manager.players[1]
+            second = self.manager.players[0]
 
         game_over = [
             "\n\n",
             self.get_board_state(),
             self.get_board_positions(),
             colorama.Fore.WHITE + "GAME OVER!\n",
-            f"The winning camel was {self.color_dict[self.game.winning_camel] + self.game.winning_camel + colorama.Fore.WHITE} and the runner up camel was {self.color_dict[self.game.second_camel] + self.game.second_camel + colorama.Fore.WHITE}!\n",
+            f"The winning camel was {self.color_dict[self.manager.winning_camel] + self.manager.winning_camel + colorama.Fore.WHITE} and the runner up camel was {self.color_dict[self.manager.second_camel] + self.manager.second_camel + colorama.Fore.WHITE}!\n",
             f"{winner.name} WINS with {winner.coins} coins!\n",
             f"{second.name} came in second with {second.coins} coins.\n",
         ]
