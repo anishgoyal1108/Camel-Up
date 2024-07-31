@@ -3,15 +3,17 @@ import random
 
 
 class GameManager:
+    """
+    Manages the state and rules of Camel Up.
+    """
+
     def __init__(self, Player1=Player("Alice"), Player2=Player("Bob")):
-        self.cards = {
-            "red": [5, 3, 2, 2],
-            "green": [5, 3, 2, 2],
-            "blue": [5, 3, 2, 2],
-            "yellow": [5, 3, 2, 2],
-            "purple": [5, 3, 2, 2],
-        }
-        self.dice = {"red": 0, "green": 0, "blue": 0, "yellow": 0, "purple": 0}
+        """
+        Initialize the GameManager with players and game state.
+        """
+        self.colors = ["red", "green", "blue", "yellow", "purple"]
+        self.cards = {color: [5, 3, 2, 2] for color in self.colors}
+        self.dice = {color: 0 for color in self.colors}
         self.current_player = Player1
         self.board = [[] for _ in range(16)]
         self.player_scores = [0, 0]
@@ -21,7 +23,10 @@ class GameManager:
         self.player_names = [Player1.name, Player2.name]
 
     def init_camels(self) -> None:
-        dice = ["red", "green", "blue", "yellow", "purple"]
+        """
+        Initialize the camels on the board at random positions.
+        """
+        dice = self.colors.copy()
         for _ in range(5):
             pick = random.choice(dice)
             dice.remove(pick)
@@ -29,61 +34,68 @@ class GameManager:
             self.board[position].append(pick)
 
     def move_camels(self, camel: str, roll: int) -> None:
-        moving_camels = []
-        camel_long = ["RED", "GREEN", "BLUE", "YELLOW", "PURPLE"]
-        camel_short = ["R", "G", "B", "Y", "P"]
-        for i in range(16):
-            if camel in self.board[i]:
-                camel_position = i
-                camel_index = self.board[i].index(camel)
-                moving_camels = self.board[i][camel_index::]
-                self.board[i] = [x for x in self.board[i] if not x in moving_camels]
-                if i+roll > 16:
-                    self.winning_camel = camel_long[camel_short.index(moving_camels[-1])]
-                    if len(moving_camels) > 1:
-                        self.second_camel = camel_long[camel_short.index(moving_camels[-2])]
-                    else:
-                        for i in range(15, 0, -1):
-                            if len(self.board[i]) > 0:
-                                self.second_camel = camel_long[camel_short.index(self.board[i][-1])]
-                                break
+        """
+        Move the camels on the board according to the roll.
+        """
+        camel_long = [color.upper() for color in self.colors]
+        camel_short = [color[0] for color in camel_long]
+        for i, stack in enumerate(self.board):
+            if camel in stack:
+                camel_index = stack.index(camel)
+                moving_camels = stack[camel_index:]
+                self.board[i] = stack[:camel_index]
+                if i + roll >= len(self.board):
+                    self.winning_camel = camel_long[
+                        camel_short.index(moving_camels[-1])
+                    ]
+                    self.second_camel = self.find_second_camel(
+                        moving_camels, camel_long, camel_short
+                    )
                 else:
-                    self.board[i+roll].extend(moving_camels)
+                    self.board[i + roll].extend(moving_camels)
                 break
-        pass
+
+    def find_second_camel(self, moving_camels, camel_long, camel_short) -> str:
+        """
+        Helper method to find the second camel in the race.
+        """
+        if len(moving_camels) > 1:
+            return camel_long[camel_short.index(moving_camels[-2])]
+        for stack in reversed(self.board[:-1]):
+            if stack:
+                return camel_long[camel_short.index(stack[-1])]
+        return ""
 
     def update_score(self) -> None:
-        self.player_scores[0] = self.players[0].coins
-        self.player_scores[1] = self.players[1].coins
+        """
+        Update the scores of the players based on their bets.
+        """
+        self.player_scores = [player.coins for player in self.players]
 
-        for p in range(2):
-            for camel in self.players[p].cards:
+        for p, player in enumerate(self.players):
+            for camel, bets in player.cards.items():
                 if camel == self.winning_camel:
-                    for card in self.players[p].cards[self.winning_camel]:
-                        self.player_scores[p] += card
+                    self.player_scores[p] += sum(bets)
                 elif camel == self.second_camel:
-                    for card in self.players[p].cards[self.second_camel]:
-                        self.player_scores[p] += 1
+                    self.player_scores[p] += len(bets)
                 else:
-                    for card in self.players[p].cards[camel]:
-                        self.player_scores[p] -= 1
-        pass
+                    self.player_scores[p] -= len(bets)
 
-    def leg_reset(self):
+    def leg_reset(self) -> None:
+        """
+        Reset the leg of the game, including cards, dice, and player bets.
+        """
         self.cards = {
-            "red": [5, 3, 2, 2],
-            "green": [5, 3, 2, 2],
-            "blue": [5, 3, 2, 2],
-            "yellow": [5, 3, 2, 2],
-            "purple": [5, 3, 2, 2],
+            color: [5, 3, 2, 2]
+            for color in ["red", "green", "blue", "yellow", "purple"]
         }
-        self.dice = {"red": 0, "green": 0, "blue": 0, "yellow": 0, "purple": 0}
-        if self.current_player == self.players[0]:
-            self.current_name = self.player_names[1]
-            self.current_player = self.players[1]
-        else:
-            self.current_name = self.player_names[0]
-            self.current_player = self.players[0]
-        
-        self.players[0].cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
-        self.players[1].cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
+        self.dice = {color: 0 for color in ["red", "green", "blue", "yellow", "purple"]}
+        self.current_player = (
+            self.players[1]
+            if self.current_player == self.players[0]
+            else self.players[0]
+        )
+        for player in self.players:
+            player.cards = {
+                color: [] for color in ["red", "green", "blue", "yellow", "purple"]
+            }

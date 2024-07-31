@@ -4,6 +4,10 @@ import os
 
 
 class PlayGame:
+    """
+    Manages the display and player actions
+    """
+
     def __init__(self, game_manager: GameManager):
         """
         Initialize the PlayGame class.
@@ -37,6 +41,10 @@ class PlayGame:
         else:
             self.handle_roll()
         self.switch_turn()
+        if self.num_dice_rolled == 5:
+            self.display_leg_results()
+            self.num_dice_rolled = 0
+            self.game.leg_reset()
 
     def get_player_action(self) -> str:
         """
@@ -231,40 +239,65 @@ class PlayGame:
             state.append(" " * (33 - 2 * count))
         return "".join(state)
 
-    def display_final(self) -> None:
+    def display_leg_results(self) -> None:
         """
-        Display the final scores and the winner.
+        Display the results of the leg when all dice have been rolled.
         """
-        self.game.update_score()
-        print(self.get_final_scores())
-        self.print_winner()
+        leg_ended = []
+        leg_ended.append(" " * 34 + "LEG ENDED!\nLeg Results:\n")
+        leg_ended.append(self.get_leg_places())
+        leg_ended.append(self.get_player_scores_update())
+        print("".join(leg_ended))
+        input("Press any key to continue... ")
 
-    def get_final_scores(self) -> str:
+    def get_leg_places(self) -> str:
         """
-        Get the final scores as a formatted string.
+        Get the formatted string of the camel positions for the leg.
         """
+        leg_places = []
+        leg_places.append(
+            "🥇 FIRST PLACE 🥇: "
+            + self.color_dict[self.game.winning_camel.upper()]
+            + self.game.winning_camel.upper()
+            + "\n"
+        )
+        leg_places.append(
+            "🥈 SECOND PLACE 🥈: "
+            + self.color_dict[self.game.second_camel.upper()]
+            + self.game.second_camel.upper()
+            + "\n"
+        )
+        return "".join(leg_places)
+
+    def get_player_scores_update(self) -> str:
+        """
+        Get the formatted string of the player scores update for the leg.
+        """
+        init_player1_coins = self.game.players[0].coins
+        init_player2_coins = self.game.players[1].coins
+        self.game.update_score()
+        self.game.players[0].coins = self.game.player_scores[0]
+        self.game.players[1].coins = self.game.player_scores[1]
+
         spacer = 0
         if self.game.player_scores[0] > 9:
-            spacer = 1
-        scores = (
-            f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins."
-            + " " * (22 - spacer)
-        )
-        scores += f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins."
-        return scores
+            spacer += 1
+        if abs(self.game.player_scores[0] - init_player1_coins) > 9:
+            spacer += 1
+        if self.game.player_scores[0] - init_player1_coins < 0:
+            spacer += 1
 
-    def print_winner(self) -> None:
-        """
-        Print the winner of the game.
-        """
-        if self.game.player_scores[0] > self.game.player_scores[1]:
-            print(f"{self.game.player_names[0]} has won!")
-        elif self.game.player_scores[1] > self.game.player_scores[0]:
-            print(f"{self.game.player_names[1]} has won!")
-        else:
-            print(
-                f"{self.game.player_names[0]} and {self.game.player_names[1]} have tied!"
-            )
+        player_scores = []
+        player_scores.append(
+            f"{self.game.player_names[0]} has {self.game.player_scores[0]} coins ({self.game.player_scores[0] - init_player1_coins} coins)."
+            + " " * (13 - spacer)
+            + "\n"
+        )
+        player_scores.append(
+            f"{self.game.player_names[1]} has {self.game.player_scores[1]} coins ({self.game.player_scores[1] - init_player2_coins} coins).\n"
+        )
+
+        return "".join(player_scores)
 
 
 def main() -> None:
@@ -277,10 +310,6 @@ def main() -> None:
     while game.winning_camel == "":
         play_game.display_game()
         play_game.take_turn()
-        if play_game.num_dice_rolled == 5:
-            play_game.display_final()
-            play_game.num_dice_rolled = 0
-            game.leg_reset()
     play_game.display_final()
     print("End Game")
 
