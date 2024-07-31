@@ -7,7 +7,7 @@ class GameManager:
     Manages the state and rules of Camel Up.
     """
 
-    def __init__(self, Player1=Player("Alice"), Player2=Player("Bob")):
+    def __init__(self, Player1, Player2):
         """
         Initialize the GameManager with players and game state.
 

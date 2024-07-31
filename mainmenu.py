@@ -1,5 +1,6 @@
 from gamemanager import GameManager
 from playgame import PlayGame
+from player import Player
 import colorama
 import os
 
@@ -85,6 +86,24 @@ class MainMenu:
                 return int(choice)
             print(self.color_dict["RED"] + "Invalid choice. Please enter 1 or 2.")
 
+    def get_player_names(self) -> tuple[str, str]:
+        """
+        Prompt the user to input names for both players.
+
+        Returns:
+            tuple[str, str]: A tuple containing the names for Player 1 and Player 2.
+        """
+        print(self.color_dict["WHITE"] + "Enter names for both players.")
+        player1 = input("Enter name for Player 1 (default 'Alice'): ").strip()
+        player2 = input("Enter name for Player 2 (default 'Bob'): ").strip()
+
+        if not player1:
+            player1 = "Alice"
+        if not player2:
+            player2 = "Bob"
+
+        return player1, player2
+
 
 def main() -> None:
     """
@@ -97,7 +116,8 @@ def main() -> None:
         choice = menu.get_user_choice()
 
         if choice == 1:
-            game = GameManager()
+            player1, player2 = menu.get_player_names()
+            game = GameManager(Player1=Player(player1), Player2=Player(player2))
             play_game = PlayGame(game)
             game.init_camels()
 
@@ -113,7 +133,7 @@ def main() -> None:
             break
 
         elif choice == 2:
-            print(menu.color_dict["GREEN"] + "Thank you for playing Camel Up! Goodbye!")
+            print(menu.color_dict["GREEN"] + "Thank you for playing Camel Up!")
             break
 
 
