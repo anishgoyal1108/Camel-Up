@@ -53,9 +53,7 @@ class GameManager:
                 moving_camels = stack[camel_index:]
                 self.board[i] = stack[:camel_index]
                 if i + roll >= len(self.board):
-                    self.winning_camel = camel_long[
-                        camel_short.index(moving_camels[-1])
-                    ]
+                    self.winning_camel = moving_camels[-1].upper()
                     self.second_camel = self.find_second_camel(
                         moving_camels, camel_long, camel_short
                     )
@@ -76,10 +74,10 @@ class GameManager:
             str: The color of the second camel in the race.
         """
         if len(moving_camels) > 1:
-            return camel_long[camel_short.index(moving_camels[-2])]
+            return moving_camels[-2].upper()
         for stack in reversed(self.board[:-1]):
             if stack:
-                return camel_long[camel_short.index(stack[-1])]
+                return stack[-1].upper()
         return ""
 
     def update_score(self) -> None:

@@ -27,6 +27,8 @@ class PlayGame:
         }
         self.num_dice_rolled = 0
         colorama.init(autoreset=True)
+        self.leg_winner = ""
+        self.leg_second = ""
 
     def clear(self) -> None:
         """
@@ -292,16 +294,16 @@ class PlayGame:
         leg_places.append(
             colorama.Fore.WHITE
             + "🥇 FIRST PLACE 🥇: "
-            + self.color_dict[self.game.winning_camel.upper()]
-            + self.game.winning_camel.upper()
+            + self.color_dict[self.leg_winner.upper()]
+            + self.leg_winner.upper()
             + colorama.Fore.WHITE
             + "\n"
         )
         leg_places.append(
             colorama.Fore.WHITE
             + "🥈 SECOND PLACE 🥈: "
-            + self.color_dict[self.game.second_camel.upper()]
-            + self.game.second_camel.upper()
+            + self.color_dict[self.leg_second.upper()]
+            + self.leg_second.upper()
             + "\n"
         )
         return "".join(leg_places)
@@ -347,8 +349,8 @@ class PlayGame:
         for i in range(15, 0, -1):
             if len(self.game.board[i]) > 0:
                 if not winning_camel_found:
-                    self.game.winning_camel = self.game.board[i][-1]
+                    self.leg_winner = self.game.board[i][-1]
                     winning_camel_found = True
                 else:
-                    self.game.second_camel = self.game.board[i][-1]
+                    self.leg_second = self.game.board[i][-1]
                     break
