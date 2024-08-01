@@ -265,7 +265,7 @@ class TestEVBot(unittest.TestCase):
         """
         Test return datatype
         """
-        actual = self.bot.calculate_ev("red", 1, self.game.board)
+        actual = self.bot.calculate_ev()
         self.assertIsInstance(actual, str)
 
     def test_3(self):
@@ -476,13 +476,58 @@ class TestGameManager(unittest.TestCase):
         """
         Ensure variables are reset to their original states (except self.game.current_player)
         """
-        pass
+        # Modify game state
+        self.game_manager.cards = {
+            color: [1, 1, 1, 1]
+            for color in ["red", "green", "blue", "yellow", "purple"]
+        }
+        self.game_manager.dice = {
+            color: 1 for color in ["red", "green", "blue", "yellow", "purple"]
+        }
+        self.game_manager.players[0].cards["red"] = [5, 3, 2, 2]
+        self.game_manager.players[1].cards["blue"] = [5, 3, 2, 2]
+
+        # Capture current player
+        current_player = self.game_manager.current_player
+
+        # Perform leg reset
+        self.game_manager.leg_reset()
+
+        # Check if cards, dice, and player bets are reset correctly
+        self.assertEqual(
+            self.game_manager.cards,
+            {
+                color: [5, 3, 2, 2]
+                for color in ["red", "green", "blue", "yellow", "purple"]
+            },
+        )
+        self.assertEqual(
+            self.game_manager.dice,
+            {color: 0 for color in ["red", "green", "blue", "yellow", "purple"]},
+        )
+        for player in self.game_manager.players:
+            self.assertEqual(
+                player.cards,
+                {color: [] for color in ["red", "green", "blue", "yellow", "purple"]},
+            )
 
     def test_18(self):
         """
         Test that the first player for the next leg is the player not currently playing.
         """
-        pass
+        # Set initial player
+        initial_player = self.game_manager.current_player
+
+        # Perform leg reset
+        self.game_manager.leg_reset()
+
+        # Check if current player is switched to the other player
+        expected_player = (
+            self.game_manager.players[1]
+            if initial_player == self.game_manager.players[0]
+            else self.game_manager.players[0]
+        )
+        self.assertEqual(self.game_manager.current_player, expected_player)
 
 
 if __name__ == "__main__":

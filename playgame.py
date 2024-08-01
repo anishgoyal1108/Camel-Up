@@ -48,6 +48,10 @@ class PlayGame:
         elif action == "R":
             self.handle_roll()
         elif action == "H":
+            if self.current_player.coins <= 0:
+                if not skip_evbot:
+                    print("You don't have enough coins to buy a hint!")
+                self.take_turn(action=skip_evbot)
             self.handle_hint(skip_evbot=skip_evbot)
             self.take_turn(
                 action=skip_evbot

@@ -116,12 +116,19 @@ class EVBot:
                 if max_ev_camel is None or ev_values[color] > max_ev:
                     max_ev, max_ev_camel = ev_values[color], color
             else:
-                ev_values_string.append(f"{color} - Betting not applicable!\n")
+                ev_values_string.append(
+                    f"{color}" + (" " * (6 - len(color) + 1)) + "- BET NOT POSSIBLE\n"
+                )
                 continue
 
             ev_values_string.append(
-                f"{color} - P(Winning): {prob_win:.2f}    P(Runner-Up): {prob_second:.2f}    EV: {ev_values[color]:.2f}\n"
+                f"{color}"
+                + (" " * (6 - len(color) + 1))
+                + f"- P(Winning): {prob_win:.2f}   P(Runner-Up): {prob_second:.2f}   EV: {ev_values[color]:.2f}\n"
             )
 
-        ev_values_string.append(f"\nYou should bet on {max_ev_camel}.")
+        if max_ev > 1:
+            ev_values_string.append(f"\nYou should bet on {max_ev_camel}.")
+        else:
+            ev_values_string.append("\nYou should roll.")
         return "".join(ev_values_string)
