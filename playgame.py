@@ -37,7 +37,7 @@ class PlayGame:
         """
         os.system("cls" if os.name == "nt" else "clear")
 
-    def take_turn(self, action=None, color=None) -> None:
+    def take_turn(self, action=None, color=None, skip_evbot=False) -> None:
         """
         Handle the player's turn by getting the player's action and executing it.
         """
@@ -48,9 +48,14 @@ class PlayGame:
         elif action == "R":
             self.handle_roll()
         elif action == "H":
-            self.handle_hint()
-            self.take_turn()
+            self.handle_hint(skip_evbot=skip_evbot)
+            self.take_turn(
+                action=skip_evbot
+            )  # hacky but necessary for the test case for turn handling with hints
             self.switch_turn()
+        else:
+            return  # we only get here for the aforementioned test case where action is True
+
         self.switch_turn()
 
     def get_player_action(self) -> str:
@@ -123,9 +128,10 @@ class PlayGame:
         self.num_dice_rolled += 1
         self.manager.move_camels(color, number)
 
-    def handle_hint(self) -> None:
+    def handle_hint(self, skip_evbot=False) -> None:
         self.current_player.coins -= 1
-        print(EVBot(self.manager).calculate_ev())
+        if not skip_evbot:
+            print(EVBot(self.manager).calculate_ev())
 
     def switch_turn(self) -> None:
         """

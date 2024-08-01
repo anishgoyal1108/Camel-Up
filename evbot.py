@@ -23,6 +23,7 @@ class EVBot:
     ) -> tuple[list[list], str, str]:
         """
         Simulates a move for a given camel and roll on the game board.
+
         Args:
             camel (str): The camel to move.
             roll (int): The number of spaces the camel moves.
@@ -52,6 +53,7 @@ class EVBot:
     def find_simulated_winner(self, board: list[list]) -> tuple[str, str]:
         """
         Determines the winning and second camel from the simulated board state.
+
         Args:
             board (list[list]): The simulated game board.
         Returns:
@@ -69,6 +71,7 @@ class EVBot:
     def calculate_ev(self) -> str:
         """
         Calculates the expected value (EV) of bets for each camel based on simulated game outcomes.
+
         Returns:
             str: A string describing the EV, probability of winning, and probability of being runner-up for each camel,
                 along with a recommendation for which camel to bet on.

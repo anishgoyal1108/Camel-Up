@@ -14,7 +14,13 @@ class Player:
             name (str): The name of the player.
         """
         self.coins = 3
-        self.cards = {"red": [], "green": [], "blue": [], "yellow": [], "purple": []}
+        self.cards = {
+            "red": [],
+            "green": [],
+            "blue": [],
+            "yellow": [],
+            "purple": [],
+        }
         self.name = name
 
     def roll(self, dice: list) -> tuple:
