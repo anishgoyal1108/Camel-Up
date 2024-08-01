@@ -1,7 +1,7 @@
-from gamemanager import GameManager
-from evbot import EVBot
 import colorama
 import os
+from gamemanager import GameManager
+from evbot import EVBot
 
 
 class PlayGame:
