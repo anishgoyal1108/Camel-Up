@@ -3,6 +3,7 @@ from playgame import PlayGame
 from gamemanager import GameManager
 from player import Player
 
+
 class TestPlayGame(unittest.TestCase):
     def test_0(self):
         """
@@ -16,7 +17,7 @@ class TestPlayGame(unittest.TestCase):
         """
         game = PlayGame(GameManager(Player1=Player("Alice"), Player2=Player("Bob")))
         alice = game.manager.players[0]
-        bob = game.manager.players[1] 
+        bob = game.manager.players[1]
         self.assertEqual(game.current_player.name, "Alice")
         game.take_turn("B", "red")
         self.assertEqual(game.current_player.name, "Bob")
@@ -42,30 +43,34 @@ class TestPlayGame(unittest.TestCase):
         - Updating the dice state
         - Appending the dice count
         """
-        game = PlayGame(GameManager(Player1=Player("Alice"), Player2=Player("Bob"))) 
+        game = PlayGame(GameManager(Player1=Player("Alice"), Player2=Player("Bob")))
         alice = game.manager.players[0]
         bob = game.manager.players[1]
         self.assertEqual(game.current_player.name, "Alice")
         game.take_turn("R")
         self.assertEqual(game.current_player.name, "Bob")
         self.assertEqual(alice.coins, 4)
-        self.assertEqual(len([key for key in game.manager.dice if game.manager.dice[key] == 0]), 4)
+        self.assertEqual(
+            len([key for key in game.manager.dice if game.manager.dice[key] == 0]), 4
+        )
         self.assertEqual(game.num_dice_rolled, 1)
         game.take_turn("R")
         self.assertEqual(game.current_player.name, "Alice")
         self.assertEqual(bob.coins, 4)
-        self.assertEqual(len([key for key in game.manager.dice if game.manager.dice[key] == 0]), 3)
+        self.assertEqual(
+            len([key for key in game.manager.dice if game.manager.dice[key] == 0]), 3
+        )
         self.assertEqual(game.num_dice_rolled, 2)
-    
+
     def test_2(self):
         """
-        Players cannot bet > 4 times on the same camel, or the program will 
-        encounter an IndexError. 
-        
+        Players cannot bet > 4 times on the same camel, or the program will
+        encounter an IndexError.
+
         NOTE: This exception will never actually be thrown, since we check
         the length of the remaining betting cards before accepting the user's response.
-        """ 
-        game = PlayGame(GameManager(Player1=Player("Alice"), Player2=Player("Bob"))) 
+        """
+        game = PlayGame(GameManager(Player1=Player("Alice"), Player2=Player("Bob")))
         self.assertEqual(game.current_player.name, "Alice")
         game.take_turn("B", "red")
         self.assertEqual(game.current_player.name, "Bob")
@@ -75,16 +80,17 @@ class TestPlayGame(unittest.TestCase):
         self.assertEqual(game.current_player.name, "Bob")
         game.take_turn("B", "red")
         self.assertEqual(game.current_player.name, "Alice")
-        self.assertRaises(IndexError, game.take_turn("B", "red"))
+        with self.assertRaises(IndexError):
+            game.take_turn("B", "red")
 
     def test_3(self):
         """
         Test getting hint for a player's turn.
         """
         pass
-    
+
     def test_4(self):
-       pass 
+        pass
 
 
 if __name__ == "__main__":

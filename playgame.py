@@ -28,7 +28,7 @@ class PlayGame:
         }
         self.num_dice_rolled = 0
         self.leg_winner = ""
-        self.leg_second = "" 
+        self.leg_second = ""
         colorama.init(autoreset=True)
 
     def clear(self) -> None:
@@ -37,7 +37,7 @@ class PlayGame:
         """
         os.system("cls" if os.name == "nt" else "clear")
 
-    def take_turn(self, action = None, color = None) -> None:
+    def take_turn(self, action=None, color=None) -> None:
         """
         Handle the player's turn by getting the player's action and executing it.
         """
@@ -47,9 +47,10 @@ class PlayGame:
             self.handle_bet(color)
         elif action == "R":
             self.handle_roll()
-        else:
+        elif action == "H":
             self.handle_hint()
             self.take_turn()
+            self.switch_turn()
         self.switch_turn()
 
     def get_player_action(self) -> str:
@@ -60,21 +61,26 @@ class PlayGame:
             str: The action
         """
         while True:
-            action = input(f"\n{self.current_name}'s turn!\n(B)et, (R)oll, or get (H)int? ").upper()
+            action = input(
+                f"\n{self.current_name}'s turn!\n(B)et, (R)oll, or get (H)int? "
+            ).upper()
             if action in ["B", "BET"]:
                 return "B"
             elif action in ["R", "ROLL"]:
                 return "R"
-            elif action in ["H", "Hint"]:
+            elif action in ["H", "HINT"]:
                 return "H"
             else:
                 print("Sorry, that's not a valid move.")
 
-    def handle_bet(self, color = None) -> None:
+    def handle_bet(self, color=None) -> None:
         """
         Handle the bet action by prompting the player to choose a bet color.
         """
         if not color:
+            if all(len(color_arr) == 0 for color_arr in self.manager.cards.values()):
+                print("There are no betting cards remaining!")
+                return
             color = self.get_bet_color()
         self.manager.cards = self.current_player.take_bet(color, self.manager.cards)
 
@@ -109,12 +115,14 @@ class PlayGame:
         """
         Handle the roll action by rolling available dice and moving camels accordingly.
         """
-        available_dice = [key for key in self.manager.dice if self.manager.dice[key] == 0]
+        available_dice = [
+            key for key in self.manager.dice if self.manager.dice[key] == 0
+        ]
         color, number = self.current_player.roll(available_dice)
         self.manager.dice[color] = number
         self.num_dice_rolled += 1
         self.manager.move_camels(color, number)
-    
+
     def handle_hint(self) -> None:
         self.current_player.coins -= 1
         print(EVBot(self.manager).calculate_ev())
@@ -167,7 +175,9 @@ class PlayGame:
         for key in ["red", "green", "blue", "yellow", "purple"]:
             if len(self.manager.cards[key]) != 0:
                 state.append(
-                    self.color_dict[key.upper()] + str(max(self.manager.cards[key])) + " "
+                    self.color_dict[key.upper()]
+                    + str(max(self.manager.cards[key]))
+                    + " "
                 )
             else:
                 state.append(self.color_dict[key.upper()] + "X ")
