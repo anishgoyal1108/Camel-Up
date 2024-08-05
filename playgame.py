@@ -27,8 +27,6 @@ class PlayGame:
             "PURPLE": colorama.Fore.MAGENTA,
         }
         self.num_dice_rolled = 0
-        self.leg_winner = ""
-        self.leg_second = ""
         colorama.init(autoreset=True)
 
     def clear(self) -> None:
@@ -94,6 +92,7 @@ class PlayGame:
             color = self.get_bet_color()
             if color is None:
                 self.take_turn()
+                self.switch_turn()
                 return
         self.manager.cards = self.current_player.take_bet(color, self.manager.cards)
 
@@ -333,16 +332,16 @@ class PlayGame:
         leg_places.append(
             colorama.Fore.WHITE
             + "🥇 FIRST PLACE 🥇: "
-            + self.color_dict[self.leg_winner.upper()]
-            + self.leg_winner.upper()
+            + self.color_dict[self.manager.winning_camel.upper()]
+            + self.manager.winning_camel.upper()
             + colorama.Fore.WHITE
             + "\n"
         )
         leg_places.append(
             colorama.Fore.WHITE
             + "🥈 SECOND PLACE 🥈: "
-            + self.color_dict[self.leg_second.upper()]
-            + self.leg_second.upper()
+            + self.color_dict[self.manager.second_camel.upper()]
+            + self.manager.second_camel.upper()
             + "\n"
         )
         return "".join(leg_places)
@@ -389,20 +388,6 @@ class PlayGame:
             )
 
         return "".join(player_scores)
-
-    def calculate_leg_winners(self) -> None:
-        """
-        Calculate the winners based on the camel positions on the board.
-        """
-        winning_camel_found = False
-        for i in range(15, 0, -1):
-            if len(self.manager.board[i]) > 0:
-                if not winning_camel_found:
-                    self.leg_winner = self.manager.board[i][-1]
-                    winning_camel_found = True
-                else:
-                    self.leg_second = self.manager.board[i][-1]
-                    break
 
     def game_over(self) -> None:
         """

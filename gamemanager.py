@@ -23,6 +23,7 @@ class GameManager:
         self.player_scores = [0, 0]
         self.winning_camel = ""
         self.second_camel = ""
+        self.over = False
         self.players = [Player1, Player2]
         self.player_names = [Player1.name, Player2.name]
 
@@ -52,6 +53,7 @@ class GameManager:
                 moving_camels = stack[camel_index:]
                 self.board[i] = stack[:camel_index]
                 if i + roll >= len(self.board):
+                    self.over = True
                     self.winning_camel = moving_camels[-1].upper()
                     self.second_camel = (
                         moving_camels[-2].upper()
@@ -67,14 +69,28 @@ class GameManager:
                     )
                 else:
                     self.board[i + roll].extend(moving_camels)
+                    self.calculate_leg_winners()
                 break
+
+    def calculate_leg_winners(self) -> None:
+        """
+        Calculate the winners based on the camel positions on the board.
+        """
+        winning_camel_found = False
+        for i in range(15, 0, -1):
+            if len(self.board[i]) > 0:
+                if not winning_camel_found:
+                    self.winning_camel = self.board[i][-1]
+                    winning_camel_found = True
+                else:
+                    self.second_camel = self.board[i][-1]
+                    break
 
     def update_score(self) -> None:
         """
         Update the scores of the players based on their bets.
         """
         self.player_scores = [player.coins for player in self.players]
-
         for p, player in enumerate(self.players):
             for camel, bets in player.cards.items():
                 if camel == self.winning_camel:
