@@ -41,6 +41,7 @@ class PlayGame:
         """
         Handle the player's turn by getting the player's action and executing it.
         """
+        self.display_game()
         if not action:
             action = self.get_player_action()
         if action == "B":
@@ -91,6 +92,9 @@ class PlayGame:
                 print("There are no betting cards remaining!")
                 return
             color = self.get_bet_color()
+            if color is None:
+                self.take_turn()
+                return
         self.manager.cards = self.current_player.take_bet(color, self.manager.cards)
 
     def get_bet_color(self) -> str:
@@ -104,7 +108,7 @@ class PlayGame:
         camel_short = ["r", "g", "b", "y", "p"]
         while True:
             color = input(
-                "Which bet would you like to place? (red, green, blue, yellow, purple) "
+                'Which bet (red, green, blue, yellow, purple) would you like to place (or "exit" to go back)? '
             ).lower()
             if color in camel_short:
                 color = camel_colors[camel_short.index(color)]
@@ -117,6 +121,8 @@ class PlayGame:
                     return color
                 else:
                     print(f"Sorry, all the {color} cards are gone.")
+            elif color == "exit":
+                return None
             else:
                 print("Sorry, that's not a valid card.")
 
@@ -136,6 +142,7 @@ class PlayGame:
         self.current_player.coins -= 1
         if not skip_evbot:
             print(EVBot(self.manager).calculate_ev())
+        input("Press ENTER to continue...")
 
     def switch_turn(self) -> None:
         """
@@ -360,14 +367,26 @@ class PlayGame:
             spacer += 1
 
         player_scores = [colorama.Fore.WHITE]
-        player_scores.append(
-            f"{self.manager.player_names[0]} has {self.manager.player_scores[0]} coins ({self.manager.player_scores[0] - og_coins[0]} coins)."
-            + " " * (13 - spacer)
-            + "\n"
-        )
-        player_scores.append(
-            f"{self.manager.player_names[1]} has {self.manager.player_scores[1]} coins ({self.manager.player_scores[1] - og_coins[1]} coins).\n"
-        )
+        if self.manager.player_scores[0] - og_coins[0] >= 0:
+            player_scores.append(
+                f"{self.manager.player_names[0]} has {self.manager.player_scores[0]} coins (+{self.manager.player_scores[0] - og_coins[0]} coins)."
+                + " " * (13 - spacer - len(self.manager.player_names[0]))
+                + "\n"
+            )
+        else:
+            player_scores.append(
+                f"{self.manager.player_names[0]} has {self.manager.player_scores[0]} coins ({self.manager.player_scores[0] - og_coins[0]} coins)."
+                + " " * (13 - spacer - len(self.manager.player_names[0]))
+                + "\n"
+            )
+        if self.manager.player_scores[1] - og_coins[1] >= 0:
+            player_scores.append(
+                f"{self.manager.player_names[1]} has {self.manager.player_scores[1]} coins (+{self.manager.player_scores[1] - og_coins[1]} coins).\n"
+            )
+        else:
+            player_scores.append(
+                f"{self.manager.player_names[1]} has {self.manager.player_scores[1]} coins ({self.manager.player_scores[1] - og_coins[1]} coins).\n"
+            )
 
         return "".join(player_scores)
 
