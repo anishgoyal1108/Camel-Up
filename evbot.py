@@ -1,6 +1,9 @@
 from gamemanager import GameManager
 from itertools import permutations, product
 from copy import deepcopy
+import colorama
+
+colorama.init(autoreset=True)
 
 
 class EVBot:
@@ -17,6 +20,13 @@ class EVBot:
         """
         self.game = game
         self.outcomes = [1, 2, 3]
+        self.color_dict = {
+            "RED": colorama.Fore.RED,
+            "GREEN": colorama.Fore.GREEN,
+            "BLUE": colorama.Fore.BLUE,
+            "YELLOW": colorama.Fore.YELLOW,
+            "PURPLE": colorama.Fore.MAGENTA,
+        }
 
     def simulate_move(
         self, camel: str, roll: int, board: list[list]
@@ -117,18 +127,22 @@ class EVBot:
                     max_ev, max_ev_camel = ev_values[color], color
             else:
                 ev_values_string.append(
-                    f"{color}" + (" " * (6 - len(color) + 1)) + "- BET NOT POSSIBLE\n"
+                    f"{self.color_dict[color.upper()]}{color}"
+                    + (" " * (6 - len(color) + 1))
+                    + "- BET NOT POSSIBLE\n"
                 )
                 continue
 
             ev_values_string.append(
-                f"{color}"
+                f"{self.color_dict[color.upper()]}{color}"
                 + (" " * (6 - len(color) + 1))
-                + f"- P(Winning): {prob_win:.2f}   P(Runner-Up): {prob_second:.2f}   EV: {ev_values[color]:.2f}\n"
+                + f"- P(Winning): {prob_win:.2f}   P(Runner-Up): {prob_second:.2f}   EV: {ev_values[color]:.2f} {colorama.Fore.WHITE}\n"
             )
 
         if max_ev > 1:
-            ev_values_string.append(f"\nYou should bet on {max_ev_camel}.")
+            ev_values_string.append(
+                f"\nYou should bet on {self.color_dict[max_ev_camel.upper()]}{max_ev_camel}."
+            )
         else:
             ev_values_string.append("\nYou should roll.")
         return "".join(ev_values_string)
