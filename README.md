@@ -23,7 +23,7 @@ Our implementation of Camel Up is structured with several key classes that are e
 - **MainMenu**: Displays the main menu and handles user choices, such as starting a new game or exiting.
 - **PlayGame**: Manages the gameplay, including displaying the game state and processing player actions during the game.
 - **EVBot**: A strategic assistant that provides hints for betting on each camel.
-- 
+
 ### Interaction Between Classes
 - `MainMenu` interacts with `GameManager` to start the game when a new game is selected.
 - `GameManager` interacts with `Player` to manage player-specific actions and details. It also provides game state details to `PlayGame` for display and interaction.
