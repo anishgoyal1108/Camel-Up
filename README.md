@@ -42,4 +42,4 @@ In our Pythonic version of Camel Up, we've added a strategic twist by incorporat
 5) Identify the camel with the highest EV and generate a recommendation for which camel to bet on (or if rolling is preferable to begin with).
 
 ## Conclusion
-Feel free to explore the code and enjoy the thrill of Camel Up in Python with your friends! Thank you to Jane Street Capital Group for giving us the opportunity to make this project.
+Feel free to explore the code and enjoy the thrill of Camel Up in Python with your friends! Thank you to Jane Street Group, LLC. for giving us the opportunity to make this project!
